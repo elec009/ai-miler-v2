@@ -1,0 +1,5 @@
+Important: Account update required for {name}
+Action Needed: Please confirm your verification details
+Your exclusive invitation token is ready
+Security Notice: Confirmation needed for {email}
+Important update regarding your account status

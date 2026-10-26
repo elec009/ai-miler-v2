@@ -1,0 +1,3 @@
+https://example.com/verify
+https://example.com/portal
+https://example.com/access

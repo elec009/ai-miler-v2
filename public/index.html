@@ -1,0 +1,1992 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Mailer Pro &bull; Smart Email Automation Suite</title>
+    <!-- Fonts & Icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&family=Orbitron:wght@500;600;700;800;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <link href="css/style.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+</head>
+<body>
+
+    <!-- Top App Navigation -->
+    <header class="app-navbar">
+        <div class="container-fluid d-flex align-items-center justify-content-between">
+            <div class="d-flex align-items-center gap-3">
+                <a href="#" class="brand-badge" onclick="dashboard.switchSection('dashboard'); return false;">
+                    <div class="brand-logo-icon">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <div>
+                        <span>AI MAILER</span>
+                    </div>
+                </a>
+
+                <div class="d-none d-md-flex align-items-center ms-3">
+                    <div id="engineStatusPill" class="engine-status-pill stopped">
+                        <div class="status-dot"></div>
+                        <span id="engineStatusText">SYSTEM IDLE</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Top Header Quick Actions -->
+            <div class="d-flex align-items-center gap-2">
+                <button class="btn-app btn-app-outline btn-app-sm d-none d-sm-inline-flex" id="quickTestModalBtn" title="Send a 1-click test preview email">
+                    <i class="fas fa-bolt text-warning"></i> Quick Test Send
+                </button>
+
+                <button class="btn-app btn-app-outline btn-app-sm" id="soundToggleBtn" title="Toggle audio alert chime">
+                    <i class="fas fa-volume-up" id="soundIcon"></i>
+                </button>
+
+                <button class="btn-app btn-app-outline btn-app-sm" id="refreshBtn" title="Refresh state">
+                    <i class="fas fa-sync-alt" id="refreshIcon"></i>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main App Container -->
+    <div class="container-fluid py-4 px-lg-4">
+        <div class="row g-4">
+            <!-- App Sidebar Navigation -->
+            <aside class="col-lg-3 col-xl-2">
+                <nav class="app-sidebar">
+                    <div class="nav-category-title">Core Operations</div>
+                    <a class="app-nav-item active" data-section="dashboard">
+                        <i class="fas fa-gauge-high"></i>
+                        <span>Dashboard</span>
+                    </a>
+                    <a class="app-nav-item" data-section="wizard">
+                        <i class="fas fa-rocket"></i>
+                        <span>Campaign Wizard</span>
+                    </a>
+                    <a class="app-nav-item" data-section="smtp">
+                        <i class="fas fa-server"></i>
+                        <span>SMTP Hub</span>
+                        <span class="nav-badge" id="sidebarSmtpBadge">0</span>
+                    </a>
+                    <a class="app-nav-item" data-section="inbox-tester">
+                        <i class="fas fa-filter-circle-dollar"></i>
+                        <span>SMTP Inbox Tester</span>
+                        <span class="nav-badge" id="sidebarTesterBadge" style="display:none;">0</span>
+                    </a>
+                    <a class="app-nav-item" data-section="mailbox-monitor">
+                        <i class="fas fa-satellite-dish"></i>
+                        <span>Mailbox Activity Monitor</span>
+                        <span class="nav-badge" id="sidebarMonitorBadge" style="display:none;">0</span>
+                    </a>
+                    <a class="app-nav-item" data-section="combo-hunter">
+                        <i class="fas fa-bolt-lightning"></i>
+                        <span>Combo SMTP Hunter</span>
+                        <span class="nav-badge" id="sidebarHunterBadge" style="display:none;">0</span>
+                    </a>
+                    <a class="app-nav-item" data-section="emails">
+                        <i class="fas fa-address-book"></i>
+                        <span>Audience & Cleaner</span>
+                        <span class="nav-badge" id="sidebarEmailsBadge">0</span>
+                    </a>
+
+                    <div class="nav-category-title mt-3">Content & Stealth</div>
+                    <a class="app-nav-item" data-section="templates">
+                        <i class="fas fa-wand-magic-sparkles"></i>
+                        <span>Template Studio</span>
+                    </a>
+                    <a class="app-nav-item" data-section="bcc">
+                        <i class="fas fa-user-secret"></i>
+                        <span>BCC Manager</span>
+                    </a>
+
+                    <div class="nav-category-title mt-3">System & Monitoring</div>
+                    <a class="app-nav-item" data-section="config">
+                        <i class="fas fa-sliders"></i>
+                        <span>Settings</span>
+                    </a>
+                    <a class="app-nav-item" data-section="logs">
+                        <i class="fas fa-terminal"></i>
+                        <span>Live Terminal</span>
+                    </a>
+                </nav>
+            </aside>
+
+            <!-- Main Workspace Sections -->
+            <main class="col-lg-9 col-xl-10">
+
+                <!-- 1. DASHBOARD SECTION -->
+                <section id="section-dashboard" class="app-section active">
+                    <!-- Hero Campaign Control Panel -->
+                    <div class="hero-launcher">
+                        <div class="row align-items-center g-3">
+                            <div class="col-xl-6">
+                                <div class="d-flex align-items-center gap-3">
+                                    <div>
+                                        <h4 class="mb-1 fw-bold text-white">Campaign Control</h4>
+                                        <p class="text-muted mb-0 small">Multi-SMTP rotation with intelligent throttling.</p>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-xl-6">
+                                <div class="d-flex flex-wrap align-items-center justify-content-xl-end gap-2">
+                                    <div class="speed-preset-selector">
+                                        <button class="speed-pill-btn" data-speed="stealth" title="10s delay, max safety">
+                                            Stealth
+                                        </button>
+                                        <button class="speed-pill-btn active" data-speed="balanced" title="3s delay, standard">
+                                            Balanced
+                                        </button>
+                                        <button class="speed-pill-btn" data-speed="turbo" title="0.5s delay, high speed">
+                                            Turbo
+                                        </button>
+                                    </div>
+
+                                    <button id="startBtn" class="btn-app btn-app-success btn-app-lg">
+                                        <i class="fas fa-play"></i> Start Campaign
+                                    </button>
+                                    <button id="stopBtn" class="btn-app btn-app-danger btn-app-lg" disabled>
+                                        <i class="fas fa-stop"></i> Stop
+                                    </button>
+                                    <button id="dryRunBtn" class="btn-app btn-app-warning">
+                                        <i class="fas fa-vial"></i> Dry Run
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Real-time Progress Bar -->
+                        <div class="mt-4">
+                            <div class="d-flex justify-content-between text-muted small mb-2 fw-semibold">
+                                <span>Campaign Delivery Progress</span>
+                                <span id="progressPercentLabel" class="text-white">0% Complete</span>
+                            </div>
+                            <div class="progress-wrap-app">
+                                <div id="progressBar" class="progress-bar-glow" style="width: 0%;"></div>
+                            </div>
+                            <div class="row text-center mt-3 g-2">
+                                <div class="col-4">
+                                    <div class="p-2 rounded bg-dark border border-subtle">
+                                        <small class="text-muted d-block">Sent Successfully</small>
+                                        <span id="sentCount" class="fw-bold text-success fs-5">0</span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 rounded bg-dark border border-subtle">
+                                        <small class="text-muted d-block">Failed / Bounced</small>
+                                        <span id="failedCount" class="fw-bold text-danger fs-5">0</span>
+                                    </div>
+                                </div>
+                                <div class="col-4">
+                                    <div class="p-2 rounded bg-dark border border-subtle">
+                                        <small class="text-muted d-block">Queue Remaining</small>
+                                        <span id="remainingCount" class="fw-bold text-cyan fs-5">0</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Metrics Grid -->
+                    <div class="row g-3 mb-4">
+                        <div class="col-md-6 col-xl-3">
+                            <div class="metric-card">
+                                <div class="metric-label">Target Audience</div>
+                                <div class="metric-value" id="dashTotalEmails">0</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3">
+                            <div class="metric-card">
+                                <div class="metric-label">Active SMTP Nodes</div>
+                                <div class="metric-value" id="dashTotalSmtp">0</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3">
+                            <div class="metric-card">
+                                <div class="metric-label">Success Ratio</div>
+                                <div class="metric-value" id="dashDeliveryRate">100%</div>
+                            </div>
+                        </div>
+                        <div class="col-md-6 col-xl-3">
+                            <div class="metric-card">
+                                <div class="metric-label">Sender Health</div>
+                                <div class="metric-value" id="dashHealthScore">98/100</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Quick Operations & Recent Mini Console -->
+                    <div class="row g-4">
+                        <div class="col-lg-7">
+                            <div class="glass-card">
+                                <div class="card-header-clean">
+                                    <h5 class="card-title-clean">
+                                        Live Logs
+                                    </h5>
+                                    <button class="btn-app btn-app-outline btn-app-sm" onclick="dashboard.switchSection('logs')">
+                                        Open Full Terminal <i class="fas fa-arrow-right ms-1"></i>
+                                    </button>
+                                </div>
+                                <div class="terminal-body p-2" style="height: 250px;" id="dashboardMiniLogs">
+                                    <div class="text-muted small p-2"><i class="fas fa-info-circle"></i> Waiting for mailer events...</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="col-lg-5">
+                            <div class="glass-card">
+                                <div class="card-header-clean">
+                                    <h5 class="card-title-clean">
+                                        Quick Actions
+                                    </h5>
+                                </div>
+                                <div class="d-flex flex-column gap-2">
+                                    <button class="btn-app btn-app-outline justify-content-start text-start py-3" onclick="dashboard.testAllSmtp()">
+                                        <div>
+                                            <div class="fw-bold text-white">Verify All SMTP Nodes</div>
+                                            <small class="text-muted">Ping all servers and measure latency</small>
+                                        </div>
+                                    </button>
+                                    <button class="btn-app btn-app-outline justify-content-start text-start py-3" onclick="dashboard.cleanEmailList()">
+                                        <div>
+                                            <div class="fw-bold text-white">Smart Clean Recipient List</div>
+                                            <small class="text-muted">Deduplicate & validate domain syntaxes</small>
+                                        </div>
+                                    </button>
+                                    <button class="btn-app btn-app-outline justify-content-start text-start py-3" onclick="dashboard.openQuickTestModal()">
+                                        <div>
+                                            <div class="fw-bold text-white">Send 1-Click Inbox Test</div>
+                                            <small class="text-muted">Verify template rendering in real email</small>
+                                        </div>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 2. CAMPAIGN WIZARD SECTION -->
+                <section id="section-wizard" class="app-section">
+                    <div class="glass-card">
+                        <div class="card-header-clean">
+                            <h5 class="card-title-clean">
+                                Campaign Setup
+                            </h5>
+                            <span class="badge bg-primary">Step-by-Step Guided Setup</span>
+                        </div>
+
+                        <div class="row g-4">
+                            <!-- Step 1 -->
+                            <div class="col-md-6 col-xl-3">
+                                <div class="p-3 rounded border border-subtle h-100 bg-dark">
+                                    <div class="d-flex align-items-center gap-2 mb-3">
+                                        <span class="badge bg-info rounded-circle px-2 py-1">1</span>
+                                        <h6 class="mb-0 fw-bold text-white">Target Language</h6>
+                                    </div>
+                                    <p class="text-muted small">Select the primary language for templates and subjects.</p>
+                                    <select id="wizardLangSelect" class="app-form-select mb-3">
+                                        <option value="DE">German (DE)</option>
+                                        <option value="EN">English (EN)</option>
+                                        <option value="FR">French (FR)</option>
+                                        <option value="ES">Spanish (ES)</option>
+                                        <option value="IT">Italian (IT)</option>
+                                    </select>
+                                    <div class="small text-cyan" id="wizardTemplateCount">Templates ready for selection.</div>
+                                </div>
+                            </div>
+
+                            <!-- Step 2 -->
+                            <div class="col-md-6 col-xl-3">
+                                <div class="p-3 rounded border border-subtle h-100 bg-dark">
+                                    <div class="d-flex align-items-center gap-2 mb-3">
+                                        <span class="badge bg-info rounded-circle px-2 py-1">2</span>
+                                        <h6 class="mb-0 fw-bold text-white">Speed & Delays</h6>
+                                    </div>
+                                    <p class="text-muted small">Choose pacing to prevent IP rate-limiting.</p>
+                                    <div class="mb-2">
+                                        <label class="app-form-label">Send Delay (ms)</label>
+                                        <input type="number" id="wizardSendDelay" class="app-form-control" value="3000">
+                                    </div>
+                                    <div>
+                                        <label class="app-form-label">Cooldown (ms)</label>
+                                        <input type="number" id="wizardCooldown" class="app-form-control" value="5000">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 3 -->
+                            <div class="col-md-6 col-xl-3">
+                                <div class="p-3 rounded border border-subtle h-100 bg-dark d-flex flex-column justify-content-between">
+                                    <div>
+                                        <div class="d-flex align-items-center justify-content-between mb-3">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <span class="badge bg-info rounded-circle px-2 py-1">3</span>
+                                                <h6 class="mb-0 fw-bold text-white">Smart Inbox Guard</h6>
+                                            </div>
+                                            <span class="badge bg-warning text-dark fw-bold" style="font-size: 10px;">AI VERIFY</span>
+                                        </div>
+                                        <p class="text-muted small mb-2">Live test inbox with optional IMAP guard.</p>
+                                        
+                                        <div class="mb-2">
+                                            <label class="app-form-label">Test Email</label>
+                                            <input type="email" id="wizardTestEmail" class="app-form-control" placeholder="myinbox@test.com">
+                                        </div>
+
+                                        <div class="mb-2">
+                                            <div class="d-flex justify-content-between align-items-center">
+                                                <label class="app-form-label mb-0">Test Email Password <span class="badge bg-secondary" style="font-size: 9px;">OPTIONAL</span></label>
+                                            </div>
+                                            <div class="input-group mt-1">
+                                                <input type="password" id="wizardTestPassword" class="app-form-control" placeholder="IMAP / App Password">
+                                                <button class="btn-app btn-app-outline px-2" type="button" id="toggleWizardPassBtn" onclick="dashboard.toggleWizardPassVisibility()" title="Show/Hide Password">
+                                                    <i class="fas fa-eye" id="wizardPassEyeIcon"></i>
+                                                </button>
+                                            </div>
+                                            <small class="text-muted d-block mt-1" style="font-size: 10px;">Enables real-time IMAP placement inspection.</small>
+                                        </div>
+
+                                        <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" id="wizardSmartInboxGuard" checked>
+                                            <label class="form-check-label text-warning small fw-bold" for="wizardSmartInboxGuard">Smart Live Inbox Guard</label>
+                                        </div>
+                                        <small class="text-muted d-block mb-3" style="font-size: 10px; line-height: 1.3;">
+                                            Only uses SMTPs reaching INBOX. Skips spam droppers & sounds alarm if all drop into Spam.
+                                        </small>
+
+                                        <div class="mb-2">
+                                            <label class="app-form-label">Sample Interval (Every N)</label>
+                                            <input type="number" id="wizardTestInterval" class="app-form-control" value="20">
+                                        </div>
+                                    </div>
+
+                                    <div>
+                                        <button type="button" class="btn-app btn-app-outline btn-app-sm w-100" id="btnWizardTestInbox" onclick="dashboard.testWizardInboxPlacement()">
+                                            <i class="fas fa-microscope text-warning me-1"></i> Preflight Inbox Check
+                                        </button>
+                                        <div id="wizardInboxTestStatus" class="small mt-1 text-info text-center" style="display:none; font-size: 10px;"></div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Step 4 -->
+                            <div class="col-md-6 col-xl-3">
+                                <div class="p-3 rounded border border-subtle h-100 bg-dark d-flex flex-column justify-content-between">
+                                    <div>
+                                        <div class="d-flex align-items-center gap-2 mb-3">
+                                            <span class="badge bg-success rounded-circle px-2 py-1">4</span>
+                                            <h6 class="mb-0 fw-bold text-white">Preflight Check</h6>
+                                        </div>
+                                        <div class="small mb-2" id="wizardPrereqStatus">
+                                            <i class="fas fa-check-circle text-success me-1"></i> Ready to Launch
+                                        </div>
+                                        <p class="text-muted small">Review all settings before broadcasting.</p>
+                                    </div>
+                                    <button class="btn-app btn-app-success w-100 py-3" onclick="dashboard.startCampaignFromWizard()">
+                                        <i class="fas fa-play"></i> Launch Campaign
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 3. SMTP HUB SECTION -->
+                <section id="section-smtp" class="app-section">
+                    <div class="glass-card">
+                        <div class="card-header-clean">
+                            <div>
+                                <h5 class="card-title-clean">
+                                    SMTP Hub
+                                </h5>
+                                <small class="text-muted">Server management and load balancing</small>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn-app btn-app-outline btn-app-sm" id="testAllSmtpBtn">
+                                    <i class="fas fa-stethoscope text-info"></i> Test All Nodes
+                                </button>
+                                <button class="btn-app btn-app-primary btn-app-sm" id="openAddSmtpModalBtn">
+                                    <i class="fas fa-plus"></i> Add SMTP Node
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Bulk Raw Editor Toggle -->
+                        <div class="mb-3 d-flex justify-content-between align-items-center">
+                            <span class="text-muted small" id="smtpCountSummary">Loading SMTP servers...</span>
+                            <button class="btn-app btn-app-outline btn-app-sm" id="toggleSmtpBulkBtn">
+                                <i class="fas fa-file-code"></i> Bulk Raw Text Format (host|port|user|pass)
+                            </button>
+                        </div>
+
+                        <!-- Bulk Textarea (Hidden by default) -->
+                        <div id="smtpBulkContainer" style="display: none;" class="mb-4">
+                            <label class="app-form-label">Raw Credentials (One per line: host|port|user|pass)</label>
+                            <textarea id="smtpRawTextarea" class="app-form-control editor-monowrap" rows="8" placeholder="smtp.example.com|587|user@example.com|password"></textarea>
+                            <div class="mt-2 d-flex gap-2">
+                                <button class="btn-app btn-app-primary btn-app-sm" id="saveRawSmtpBtn">Save Raw Credentials</button>
+                                <button class="btn-app btn-app-outline btn-app-sm" onclick="document.getElementById('smtpBulkContainer').style.display='none';">Cancel</button>
+                            </div>
+                        </div>
+
+                        <!-- Visual Grid of SMTP Cards -->
+                        <div class="smtp-grid" id="smtpCardsGrid">
+                            <!-- Injected dynamically -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 4. AUDIENCE & EMAIL CLEANER SECTION -->
+                <section id="section-emails" class="app-section">
+                    <div class="glass-card">
+                        <div class="card-header-clean">
+                            <div>
+                                <h5 class="card-title-clean">
+                                    <i class="fas fa-users"></i> Audience & Cleaner
+                                </h5>
+                                <small class="text-muted">Email list management and validation</small>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn-app btn-app-success btn-app-sm" id="smartCleanBtn">
+                                    <i class="fas fa-magic"></i> Clean & Deduplicate Now
+                                </button>
+                                <button class="btn-app btn-app-primary btn-app-sm" id="saveEmailsBtn">
+                                    <i class="fas fa-save"></i> Save Recipient List
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Stats Row -->
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-3">
+                                <div class="p-3 rounded bg-dark border border-subtle text-center">
+                                    <small class="text-muted d-block">Total Listed</small>
+                                    <span id="statTotalEmails" class="fw-bold fs-4 text-white">0</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3 rounded bg-dark border border-subtle text-center">
+                                    <small class="text-muted d-block">Valid Syntaxes</small>
+                                    <span id="statValidEmails" class="fw-bold fs-4 text-success">0</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3 rounded bg-dark border border-subtle text-center">
+                                    <small class="text-muted d-block">Duplicates Removed</small>
+                                    <span id="statDupEmails" class="fw-bold fs-4 text-warning">0</span>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="p-3 rounded bg-dark border border-subtle text-center">
+                                    <small class="text-muted d-block">Top Domain</small>
+                                    <span id="statTopDomain" class="fw-bold fs-4 text-cyan">-</span>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Domain Breakdown Bar -->
+                        <div class="mb-4">
+                            <label class="app-form-label">Detected Domain Breakdown</label>
+                            <div id="domainChipsContainer" class="p-2 rounded bg-dark border border-subtle">
+                                <span class="text-muted small">Upload or input email addresses to generate domain breakdown.</span>
+                            </div>
+                        </div>
+
+                        <!-- Drag & Drop Upload Zone -->
+                        <div class="file-dropzone mb-4" id="emailDropzone">
+                            <input type="file" id="emailFileInput" accept=".csv,.txt" style="display: none;">
+                            <i class="fas fa-cloud-arrow-up dropzone-icon"></i>
+                            <h6 class="text-white fw-bold mb-1">Drag & Drop Your CSV or TXT File Here</h6>
+                            <p class="text-muted small mb-3">Instant parsing for comma-separated, semicolon-separated, or single-line email lists.</p>
+                            <button class="btn-app btn-app-outline btn-app-sm" type="button" onclick="document.getElementById('emailFileInput').click()">
+                                <i class="fas fa-folder-open"></i> Browse File
+                            </button>
+                        </div>
+
+                        <!-- Email Textarea -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="app-form-label mb-0">Recipient Email List (One per line)</label>
+                                <button class="btn-app btn-app-outline btn-app-sm text-danger" id="clearEmailsBtn" onclick="dashboard.clearAllEmails(); return false;">
+                                    <i class="fas fa-trash"></i> Clear All
+                                </button>
+                            </div>
+                            <textarea id="emailsTextarea" class="app-form-control editor-monowrap" rows="12" placeholder="user1@example.com&#10;user2@example.com&#10;user3@example.com"></textarea>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. TEMPLATE STUDIO SECTION -->
+                <section id="section-templates" class="app-section">
+                    <div class="glass-card">
+                        <div class="card-header-clean">
+                            <div>
+                                <h5 class="card-title-clean">
+                                    Template Studio
+                                </h5>
+                                <small class="text-muted">Visual editor with deliverability scoring</small>
+                            </div>
+                            <div class="d-flex gap-2">
+                                <button class="btn-app btn-app-outline btn-app-sm" id="loadPresetModalBtn">
+                                    <i class="fas fa-layer-group text-cyan"></i> Load Pro Preset
+                                </button>
+                                <button class="btn-app btn-app-primary btn-app-sm" id="saveCurrentTemplateBtn">
+                                    <i class="fas fa-save"></i> Save Template
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Selector Controls -->
+                        <div class="row g-3 mb-3">
+                            <div class="col-md-3">
+                                <label class="app-form-label">Language</label>
+                                <select id="templateLangSelect" class="app-form-select">
+                                    <option value="DE">German (DE)</option>
+                                    <option value="EN">English (EN)</option>
+                                    <option value="FR">French (FR)</option>
+                                    <option value="ES">Spanish (ES)</option>
+                                    <option value="IT">Italian (IT)</option>
+                                </select>
+                            </div>
+                            <div class="col-md-3">
+                                <label class="app-form-label">Resource Type</label>
+                                <select id="templateTypeSelect" class="app-form-select">
+                                    <option value="letters">HTML Letter Template</option>
+                                    <option value="subjects">Subject Lines</option>
+                                    <option value="links">Destination Links</option>
+                                    <option value="footers">Footer Templates</option>
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="app-form-label">Available Files in Category</label>
+                                <select id="templateFileSelect" class="app-form-select"></select>
+                            </div>
+                        </div>
+
+                        <!-- Variable Insertion Chips -->
+                        <div class="mb-3">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <label class="app-form-label mb-0">Dynamic Merge Tokens (Click to insert at cursor in letter, link, or subject):</label>
+                                <span class="small text-muted" id="tokenInsertFeedback"><i class="fas fa-mouse-pointer me-1 text-cyan"></i> Click chip to insert & copy</span>
+                            </div>
+                            <div class="d-flex flex-wrap align-items-center gap-1">
+                                <!-- Core & Link -->
+                                <span class="token-chip" data-token="{link}" title="Smart Destination URL from links.txt (inner tokens resolved)">{link}</span>
+                                <span class="token-chip" data-token="{name}" title="Recipient name / Vorname">{name}</span>
+                                <span class="token-chip" data-token="{email}" title="Recipient email address">{email}</span>
+                                <span class="token-chip" data-token="{user}" title="Email username before @">{user}</span>
+                                <span class="token-chip" data-token="{domain}" title="Email domain after @">{domain}</span>
+                                <span class="token-chip" data-token="{subject}" title="Email subject line">{subject}</span>
+
+                                <!-- Dynamic Random IDs & Security -->
+                                <span class="token-chip" data-token="{token}" title="Unique Smart Probe Token (e.g. INBOX-9A2F-1B3C)">{token}</span>
+                                <span class="token-chip" data-token="{smtp}" title="Active SMTP Host and Port (e.g. smtp.gmx.net:587)">{smtp}</span>
+                                <span class="token-chip" data-token="{smtp_user}" title="Active SMTP Sender Account">{smtp_user}</span>
+                                <span class="token-chip" data-token="{random_id}" title="6-Digit random ID (e.g. 748291)">{random_id}</span>
+                                <span class="token-chip" data-token="{random_id:8}" title="8-Digit random ID">{random_id:8}</span>
+                                <span class="token-chip" data-token="{orderId}" title="Order Reference (#918237402)">{orderId}</span>
+                                <span class="token-chip" data-token="{customerId}" title="Customer ID (581928471)">{customerId}</span>
+                                <span class="token-chip" data-token="{code}" title="6-Digit verification code">{code}</span>
+                                <span class="token-chip" data-token="{hash}" title="16-Char hex security hash">{hash}</span>
+                                <span class="token-chip" data-token="{uuid}" title="Unique UUID v4">{uuid}</span>
+
+                                <!-- Random Alphanumeric & Tokens -->
+                                <span class="token-chip" data-token="{nl:8}" title="8-Char alphanumeric random token">{nl:8}</span>
+                                <span class="token-chip" data-token="{n:6}" title="6-Digit random numeric string">{n:6}</span>
+                                <span class="token-chip" data-token="{l:6}" title="6-Char lowercase random letters">{l:6}</span>
+                                <span class="token-chip" data-token="{L:6}" title="6-Char uppercase random letters">{L:6}</span>
+
+                                <!-- Time & Financial -->
+                                <span class="token-chip" data-token="{amount}" title="Realistic EUR amount (e.g. 149,50 €)">{amount}</span>
+                                <span class="token-chip" data-token="{date}" title="Current date (DD.MM.YYYY)">{date}</span>
+                                <span class="token-chip" data-token="{time}" title="Current time (HH:MM)">{time}</span>
+                                <span class="token-chip" data-token="{year}" title="Current year (2026)">{year}</span>
+
+                                <!-- Components & Spintax -->
+                                <span class="token-chip" data-token="{header}" title="Random header template">{header}</span>
+                                <span class="token-chip" data-token="{footer}" title="Random footer / unsubscribe block">{footer}</span>
+                                <span class="token-chip" data-token="{Option A|Option B}" title="Anti-spam spintax rotator">{A|B}</span>
+                            </div>
+                        </div>
+
+                        <!-- Split Editor & Live Preview -->
+                        <div class="row g-3">
+                            <!-- Left: Code Editor -->
+                            <div class="col-lg-6">
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="small fw-semibold text-white">Source Editor</span>
+                                    <span class="badge bg-dark border border-subtle text-muted" id="editorCharCount">0 chars</span>
+                                </div>
+                                <textarea id="templateEditor" class="app-form-control editor-monowrap" rows="18" placeholder="Type your template code or HTML here..."></textarea>
+                            </div>
+
+                            <!-- Right: Deliverability Inspector & Live Render -->
+                            <div class="col-lg-6">
+                                <!-- Deliverability Score Card -->
+                                <div class="spam-meter-card">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="small fw-bold text-uppercase text-muted">Spam Deliverability Health</span>
+                                        <div class="score-display">
+                                            <span id="spamScoreValue" class="score-safe">98</span>
+                                            <span class="fs-6 text-muted">/100</span>
+                                        </div>
+                                    </div>
+                                    <div class="progress" style="height: 6px; background: rgba(255,255,255,0.08);">
+                                        <div id="spamScoreBar" class="progress-bar bg-success" style="width: 98%;"></div>
+                                    </div>
+                                    <div id="spamFeedback" class="small text-muted mt-2">
+                                        <i class="fas fa-check-circle text-success me-1"></i> Clean formatting & no spam trigger flags detected.
+                                    </div>
+                                </div>
+
+                                <!-- Live Responsive Preview -->
+                                <div class="d-flex justify-content-between align-items-center mb-2">
+                                    <span class="small fw-semibold text-white">Live Render Preview</span>
+                                    <div class="btn-group btn-group-sm">
+                                        <button class="btn btn-outline-secondary active btn-sm" id="previewDesktopBtn" title="Desktop view">
+                                            <i class="fas fa-desktop"></i>
+                                        </button>
+                                        <button class="btn btn-outline-secondary btn-sm" id="previewMobileBtn" title="Mobile view">
+                                            <i class="fas fa-mobile-alt"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                                <div class="preview-frame-wrap" id="previewFrameWrap">
+                                    <iframe id="templateLiveIframe" sandbox="allow-same-origin"></iframe>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 6. BCC STEALTH MANAGER SECTION -->
+                <section id="section-bcc" class="app-section">
+                    <div class="glass-card">
+                        <div class="card-header-clean">
+                            <div>
+                                <h5 class="card-title-clean">
+                                    BCC Manager
+                                </h5>
+                                <small class="text-muted">BCC batch grouping configuration</small>
+                            </div>
+                            <button class="btn-app btn-app-primary btn-app-sm" id="saveBccSettingsBtn">
+                                <i class="fas fa-save"></i> Save BCC Configuration
+                            </button>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="p-3 rounded bg-dark border border-subtle mb-3">
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="bccEnabledSwitch">
+                                        <label class="form-check-label fw-bold text-white ms-2" for="bccEnabledSwitch">
+                                            Enable BCC Stealth Grouping
+                                        </label>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="app-form-label">Recipients Per Batch (Bulk Count)</label>
+                                        <input type="number" id="bccBulkCount" class="app-form-control" value="10">
+                                        <div class="app-input-hint">Number of recipients attached as BCC per single email envelope.</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="app-form-label">Batch Delay (ms)</label>
+                                        <input type="number" id="bccDelayMs" class="app-form-control" value="5000">
+                                    </div>
+                                    <div>
+                                        <label class="app-form-label">Primary 'To:' Mask Email</label>
+                                        <input type="email" id="bccMaskEmail" class="app-form-control" placeholder="Leave empty to use sender (me in To:)">
+                                        <div class="app-input-hint">The public visible recipient in header. Leave empty to send normal with me (sender address) in the 'To:' field.</div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="p-3 rounded bg-dark border border-subtle h-100">
+                                    <h6 class="fw-bold text-white mb-2">BCC Stealth Architecture Overview</h6>
+                                    <p class="text-muted small">When BCC Mode is activated, the engine groups your audience list into blocks of N recipients. One message is broadcast with individual recipients invisible to each other, multiplying throughput while preserving reputation.</p>
+                                    <ul class="text-muted small ps-3">
+                                        <li>10x lower SMTP transaction overhead</li>
+                                        <li>Adaptive throttling per batch</li>
+                                        <li>Automatic bounce detection & cooldowns</li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 7. SETTINGS & CONFIGURATION SECTION -->
+                <section id="section-config" class="app-section">
+                    <div class="glass-card">
+                        <div class="card-header-clean">
+                            <div>
+                                <h5 class="card-title-clean">
+                                    Settings
+                                </h5>
+                                <small class="text-muted">System configuration and tuning</small>
+                            </div>
+                            <button class="btn-app btn-app-primary btn-app-sm" id="saveSystemConfigBtn">
+                                <i class="fas fa-save"></i> Save System Config
+                            </button>
+                        </div>
+
+                        <div class="row g-4">
+                            <div class="col-md-6">
+                                <div class="p-3 rounded bg-dark border border-subtle">
+                                    <h6 class="fw-bold text-white mb-3"><i class="fas fa-stopwatch text-cyan me-2"></i> Throttling & Cooldowns</h6>
+                                    <div class="mb-3">
+                                        <label class="app-form-label">SMTP Cooldown Interval (ms)</label>
+                                        <input type="number" id="cfgSmtpCooldown" class="app-form-control" value="2000">
+                                        <div class="app-input-hint">Rest period before reusing the same SMTP node.</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="app-form-label">Inter-Email Send Delay (ms)</label>
+                                        <input type="number" id="cfgSendDelay" class="app-form-control" value="3000">
+                                        <div class="app-input-hint">Spacing between successive email deliveries.</div>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="app-form-label">Maximum Delivery Retries</label>
+                                        <input type="number" id="cfgMaxRetries" class="app-form-control" value="3">
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-6">
+                                <div class="p-3 rounded bg-dark border border-subtle">
+                                    <h6 class="fw-bold text-white mb-3"><i class="fas fa-id-badge text-indigo me-2"></i> Identity & Logging</h6>
+                                    <div class="mb-3">
+                                        <label class="app-form-label">Sender Display Name</label>
+                                        <input type="text" id="cfgSenderName" class="app-form-control" value="Customer Support">
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="app-form-label">Default Campaign Language</label>
+                                        <select id="cfgDefaultLang" class="app-form-select">
+                                            <option value="DE">German (DE)</option>
+                                            <option value="EN">English (EN)</option>
+                                            <option value="FR">French (FR)</option>
+                                            <option value="ES">Spanish (ES)</option>
+                                            <option value="IT">Italian (IT)</option>
+                                        </select>
+                                    </div>
+                                    <div class="mb-3">
+                                        <label class="app-form-label">System Log Verbosity</label>
+                                        <select id="cfgLogLevel" class="app-form-select">
+                                            <option value="info">Info (Standard)</option>
+                                            <option value="debug">Debug (Verbose Diagnostics)</option>
+                                            <option value="warn">Warn (Only Warnings & Errors)</option>
+                                            <option value="error">Error (Only Critical Failures)</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 8. LIVE TERMINAL LOGS SECTION -->
+                <section id="section-logs" class="app-section">
+                    <div class="terminal-window">
+                        <div class="terminal-header">
+                            <div class="d-flex align-items-center gap-3">
+                                <div class="terminal-dots">
+                                    <div class="terminal-dot red"></div>
+                                    <div class="terminal-dot yellow"></div>
+                                    <div class="terminal-dot green"></div>
+                                </div>
+                                <span class="fw-bold small text-white">Terminal</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-2">
+                                <input type="text" id="logSearchInput" class="app-form-control py-1 px-2 text-xs" style="width: 150px; font-size: 0.78rem;" placeholder="Filter text...">
+                                <select id="logLevelFilter" class="app-form-select py-1 px-2 text-xs" style="width: 100px; font-size: 0.78rem;">
+                                    <option value="all">All Levels</option>
+                                    <option value="info">Info</option>
+                                    <option value="warn">Warn</option>
+                                    <option value="error">Error</option>
+                                </select>
+                                <button class="btn-app btn-app-outline btn-app-sm" id="clearLogsBtn">
+                                    <i class="fas fa-eraser"></i> Clear
+                                </button>
+                                <button class="btn-app btn-app-outline btn-app-sm" id="copyLogsBtn">
+                                    <i class="fas fa-copy"></i> Copy
+                                </button>
+                            </div>
+                        </div>
+                        <div class="terminal-body" id="fullTerminalLogs">
+                            <!-- Injected dynamically via WebSocket and API -->
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 8. SMTP INBOX TESTER & ROTATION SYNC -->
+                <section id="section-inbox-tester" class="app-section">
+                    <!-- Section Header -->
+                    <div class="glass-card mb-4">
+                        <div class="card-header-clean d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div>
+                                    <h5 class="card-title-clean mb-1 text-white">SMTP Tester</h5>
+                                    <p class="text-muted mb-0 small">Batch test SMTP credentials with live delivery and folder placement verification.</p>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2 align-items-center flex-wrap">
+                                <button class="btn-app btn-app-outline btn-app-sm" id="checkerPasteBtn">
+                                    <i class="fas fa-paste"></i> Paste List
+                                </button>
+                                <button class="btn-app btn-app-outline btn-app-sm" id="checkerClearBtn">
+                                    <i class="fas fa-trash-can"></i> Clear Input
+                                </button>
+                                <button class="btn-app btn-app-danger btn-app-sm" id="stopCheckerBtn" style="display: none;">
+                                    <i class="fas fa-stop"></i> Abort Test
+                                </button>
+                                <button class="btn-app btn-app-primary" id="startCheckerBtn">
+                                    <i class="fas fa-play"></i> Start Inbox Test
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Live Telemetry HUD Bar -->
+                        <div class="row g-3 mt-1">
+                            <div class="col-6 col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: var(--neon-cyan); background: rgba(0, 240, 255, 0.1);">
+                                        <i class="fas fa-list-check"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Progress</div>
+                                        <div class="stat-value text-cyan">
+                                            <span id="chkCountTested">0</span> / <span id="chkCountTotal">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: var(--neon-emerald); background: rgba(0, 255, 136, 0.1);">
+                                        <i class="fas fa-inbox"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Inbox Landed / Sent OK</div>
+                                        <div class="stat-value text-emerald" id="chkCountInbox">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: var(--neon-amber); background: rgba(255, 184, 0, 0.1);">
+                                        <i class="fas fa-triangle-exclamation"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Spam / Junk Folder</div>
+                                        <div class="stat-value text-amber" id="chkCountSpam">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md-3">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: var(--neon-pink); background: rgba(255, 0, 127, 0.1);">
+                                        <i class="fas fa-circle-xmark"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Auth & Delivery Fail</div>
+                                        <div class="stat-value text-pink" id="chkCountFailed">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar & Status Text -->
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1 small">
+                                <span class="fw-bold text-muted" id="chkProgressLabel"><i class="fas fa-circle-notch fa-spin me-1" style="display:none;" id="chkSpinner"></i> Ready to verify credentials</span>
+                                <span class="text-cyan fw-bold" id="chkProgressPct">0%</span>
+                            </div>
+                            <div class="progress" style="height: 8px; background: rgba(255, 255, 255, 0.08); border-radius: 4px; overflow: hidden;">
+                                <div class="progress-bar bg-gradient-cyan" id="chkProgressBar" role="progressbar" style="width: 0%; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Tester Workspace Grid -->
+                    <div class="row g-4">
+                        <!-- Left Column: Setup & Credentials -->
+                        <div class="col-lg-6">
+                            <!-- Raw Credentials Box -->
+                            <div class="glass-card mb-4">
+                                <div class="card-header-clean d-flex justify-content-between align-items-center">
+                                    <h6 class="card-title-clean mb-0 text-white">
+                                        <i class="fas fa-database text-cyan me-2"></i> Raw Credentials (host|port|user|pass)
+                                    </h6>
+                                    <span class="badge bg-purple px-2 py-1" id="checkerInputLineCount">0 lines</span>
+                                </div>
+                                <div class="mb-2">
+                                    <textarea id="checkerRawSmtpInput" class="app-form-control editor-monowrap" rows="9" placeholder="smtp.gmx.net|587|testuser@gmx.net|MySecretPass123&#10;smtp-mail.outlook.com|587|mailer@outlook.com|AppPasswordXYZ&#10;smtp.t-online.de|465|sender@t-online.de|Password456"></textarea>
+                                </div>
+                                <div class="small text-muted d-flex justify-content-between">
+                                    <span><i class="fas fa-info-circle me-1"></i> Format: <code>host|port|user|pass</code> (auto-detects SSL/STARTTLS)</span>
+                                </div>
+                            </div>
+
+                            <!-- Smart AI Target Test Mailbox & Deliverability Sync -->
+                            <div class="glass-card mb-4">
+                                <div class="card-header-clean d-flex justify-content-between align-items-center">
+                                    <h6 class="card-title-clean mb-0 text-white">
+                                        <i class="fas fa-bullseye text-cyan me-2"></i> AI Target Test Mailbox (Auto-Detect IMAP)
+                                    </h6>
+                                    <span class="badge bg-cyan text-dark fw-bold"><i class="fas fa-microchip me-1"></i> Auto Intelligence</span>
+                                </div>
+                                <div class="p-1">
+                                    <div class="row g-3">
+                                        <div class="col-md-7">
+                                            <label class="app-form-label">Target Test Email Address <span class="text-danger">*</span></label>
+                                            <input type="email" id="chkTargetEmail" class="app-form-control" placeholder="tester@t-online.de or inbox@domain.com" required>
+                                        </div>
+                                        <div class="col-md-5">
+                                            <label class="app-form-label">Mail Password / App Key <span class="text-muted">(Optional)</span></label>
+                                            <input type="password" id="chkTargetPassword" class="app-form-control" placeholder="•••••••••••• (for auto IMAP check)">
+                                        </div>
+                                    </div>
+
+                                    <!-- Multi-Threaded Engine & Unique Test Sample Controls -->
+                                    <div class="row g-3 mt-1">
+                                        <div class="col-6 col-md-3">
+                                            <label class="app-form-label">Threads <i class="fas fa-bolt text-cyan ms-1"></i></label>
+                                            <input type="number" id="chkConcurrency" class="app-form-control" value="10" min="1" max="50">
+                                            <div class="form-text small text-muted">Parallel worker pool</div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <label class="app-form-label">Timeout (ms)</label>
+                                            <input type="number" id="chkTimeout" class="app-form-control" value="8000" min="2000" max="30000" step="1000">
+                                            <div class="form-text small text-muted">Socket connect limit</div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <label class="app-form-label">Delivery Mode</label>
+                                            <div class="mt-1">
+                                                <span class="badge bg-purple" id="chkDeliveryModeBadge">
+                                                    <i class="fas fa-layer-group me-1"></i> Config Mode
+                                                </span>
+                                            </div>
+                                            <div class="form-text small text-muted" id="chkDeliveryModeSub">BCC / Single Mode</div>
+                                        </div>
+                                        <div class="col-6 col-md-3">
+                                            <label class="app-form-label">Test Content</label>
+                                            <div class="mt-1">
+                                                <span class="badge bg-emerald text-dark fw-bold" id="chkTestContentBadge">
+                                                    <i class="fas fa-shield-halved me-1"></i> Clean & Normal
+                                                </span>
+                                            </div>
+                                            <div class="form-text small text-muted">No banners / prefixes</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Deliverability AI Status & Active Template Info -->
+                                    <div class="mt-3 p-3 rounded" style="background: rgba(139, 92, 246, 0.08); border: 1px solid rgba(139, 92, 246, 0.25);">
+                                        <div class="d-flex align-items-center justify-content-between mb-1">
+                                            <div class="d-flex align-items-center gap-2">
+                                                <i class="fas fa-brain text-purple"></i>
+                                                <span class="fw-bold text-white small">Template Studio & Deliverability AI Live Sync</span>
+                                            </div>
+                                            <span class="badge bg-purple" id="chkActiveTemplateBadge">Auto-Synced</span>
+                                        </div>
+                                        <p class="small text-muted mb-2">
+                                            Test sends use your exact saved <strong>Template Studio Letter</strong>, rotating <strong>Subjects</strong>, and <strong>Sender Name</strong> with <strong>zero-visibility unique probe tokens</strong>. No banners or prefixes are added — sends 100% normal using the mode configured in system settings (<strong>BCC Mode</strong> if enabled, or <strong>Single Mode</strong>).
+                                        </p>
+                                        <div class="small d-flex align-items-start gap-2 text-white">
+                                            <i class="fas fa-satellite-dish text-cyan mt-1"></i>
+                                            <span><strong>Smart IMAP Auto-Resolver:</strong> When password is provided, AI automatically probes mailbox folders via unique probe token telemetry to confirm exact folder placement (<strong>INBOX</strong> vs <strong>SPAM</strong>).</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Live Results & Sync to Hub -->
+                        <div class="col-lg-6">
+                            <div class="glass-card h-100 d-flex flex-column">
+                                <div class="card-header-clean d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                    <h6 class="card-title-clean mb-0 text-white">
+                                        <i class="fas fa-bolt text-cyan me-2"></i> Real-time Verification Stream
+                                    </h6>
+                                    <div class="d-flex gap-2">
+                                        <button class="btn-app btn-app-success btn-app-sm" id="saveWorkingSmtpBtn" disabled title="Save verified working SMTPs directly to Rotation Hub (smtp.txt)">
+                                            <i class="fas fa-cloud-arrow-up"></i> Save to Rotation Hub
+                                        </button>
+                                        <button class="btn-app btn-app-outline btn-app-sm" id="exportWorkingSmtpBtn" disabled title="Download working SMTPs as a TXT file">
+                                            <i class="fas fa-file-arrow-down"></i> Export
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Filters -->
+                                <div class="d-flex gap-2 p-2 border-bottom border-subtle mb-3 flex-wrap align-items-center">
+                                    <span class="small text-muted me-1">Filter:</span>
+                                    <button class="btn-app btn-app-outline btn-app-sm active" data-filter="all" id="filterBtnAll">
+                                        All (<span id="chkFilterAll">0</span>)
+                                    </button>
+                                    <button class="btn-app btn-app-outline btn-app-sm text-emerald" data-filter="inbox" id="filterBtnInbox">
+                                        <i class="fas fa-check-circle"></i> Inbox/Sent (<span id="chkFilterInbox">0</span>)
+                                    </button>
+                                    <button class="btn-app btn-app-outline btn-app-sm text-amber" data-filter="spam" id="filterBtnSpam">
+                                        <i class="fas fa-triangle-exclamation"></i> Spam (<span id="chkFilterSpam">0</span>)
+                                    </button>
+                                    <button class="btn-app btn-app-outline btn-app-sm text-pink" data-filter="failed" id="filterBtnFailed">
+                                        <i class="fas fa-times-circle"></i> Failed (<span id="chkFilterFailed">0</span>)
+                                    </button>
+                                </div>
+
+                                <!-- Live Results Container -->
+                                <div id="checkerResultsContainer" class="flex-grow-1 p-2" style="min-height: 480px; max-height: 720px; overflow-y: auto;">
+                                    <div class="text-center py-5 text-muted">
+                                        <i class="fas fa-shield-halved fa-3x mb-3 text-dim" style="opacity: 0.3;"></i>
+                                        <h6 class="text-white">Ready for Testing</h6>
+                                        <p class="small text-muted">Enter raw credentials on the left, choose a test recipient, and click <strong>Start Inbox Test</strong>.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 9. MAILBOX ACTIVITY MONITOR & REAL-TIME IMAP EVENT SUBSCRIPTION -->
+                <section id="section-mailbox-monitor" class="app-section">
+                    <!-- Section Header -->
+                    <div class="glass-card mb-4">
+                        <div class="card-header-clean d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div>
+                                    <h5 class="card-title-clean mb-1 text-white">
+                                        Mailbox Monitor
+                                        <span class="badge bg-purple ms-2" id="monThreadsBadge" style="font-size: 0.75rem;">
+                                            <span id="monThreadsBadgeNum">10</span> Threads
+                                        </span>
+                                    </h5>
+                                    <p class="text-muted mb-0 small">Batch index mailboxes over IMAP, detect targeted senders, and monitor live events.</p>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2 align-items-center flex-wrap">
+                                <button class="btn-app btn-app-outline btn-app-sm" id="monitorPasteBtn">
+                                    <i class="fas fa-paste"></i> Paste List
+                                </button>
+                                <button class="btn-app btn-app-outline btn-app-sm" id="monitorUploadBtn" title="Upload mailbox combo data file (.txt, .csv)">
+                                    <i class="fas fa-file-arrow-up text-cyan"></i> Upload Data File
+                                </button>
+                                <button class="btn-app btn-app-outline btn-app-sm" id="monitorClearBtn">
+                                    <i class="fas fa-trash-can"></i> Clear Input
+                                </button>
+                                <button class="btn-app btn-app-outline btn-app-sm" id="openSubscriptionModalBtn" title="Attach Live Event Subscription to a mailbox">
+                                    <i class="fas fa-tower-broadcast text-cyan"></i> Live Subscription Hub
+                                </button>
+                                <button class="btn-app btn-app-primary" id="startMonitorBtn">
+                                    <i class="fas fa-play"></i> Start Index
+                                </button>
+                                <button class="btn-app btn-app-danger" id="stopMonitorBtn" disabled title="Abort and halt active mailbox indexing">
+                                    <i class="fas fa-stop"></i> Abort / Stop Action
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Live Telemetry HUD Bar -->
+                        <div class="row g-3 mt-1">
+                            <div class="col-6 col-md">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: var(--neon-cyan); background: rgba(0, 240, 255, 0.1);">
+                                        <i class="fas fa-list-check"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Progress</div>
+                                        <div class="stat-value text-cyan">
+                                            <span id="monCountTested">0</span> / <span id="monCountTotal">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: var(--neon-purple); background: rgba(139, 92, 246, 0.1);">
+                                        <i class="fas fa-key"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Authenticated</div>
+                                        <div class="stat-value text-purple" id="monCountAuth">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: var(--neon-emerald); background: rgba(0, 255, 136, 0.1);">
+                                        <i class="fas fa-id-badge"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Matched Accounts</div>
+                                        <div class="stat-value text-emerald" id="monCountMatchedAcc">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: var(--neon-amber); background: rgba(255, 184, 0, 0.1);">
+                                        <i class="fas fa-envelope-open-text"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Matched Messages</div>
+                                        <div class="stat-value text-amber" id="monCountMatchedMsgs">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: var(--neon-pink); background: rgba(255, 0, 127, 0.1);">
+                                        <i class="fas fa-triangle-exclamation"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Auth Failed</div>
+                                        <div class="stat-value text-pink" id="monCountFailed">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: var(--neon-cyan); background: rgba(0, 240, 255, 0.1);">
+                                        <i class="fas fa-gauge-high"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Throughput Rate</div>
+                                        <div class="stat-value text-cyan">
+                                            <span id="monCountRate">0.0</span> <span style="font-size: 0.65rem; opacity: 0.75; font-weight: normal;">box/s</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar & Status Text -->
+                        <div class="mt-3">
+                            <div class="d-flex justify-content-between align-items-center mb-1 small">
+                                <span class="fw-bold text-muted" id="monProgressLabel"><i class="fas fa-circle-notch fa-spin me-1" style="display:none;" id="monSpinner"></i> Ready to index authorized mailboxes</span>
+                                <div class="d-flex align-items-center gap-2">
+                                    <button class="btn btn-outline-danger btn-sm py-0 px-2 fw-bold" id="monQuickAbortBtn" style="display:none; font-size: 0.72rem;" title="Abort ongoing indexing action">
+                                        <i class="fas fa-hand me-1"></i> Abort Action
+                                    </button>
+                                    <span class="text-cyan fw-bold" id="monProgressPct">0%</span>
+                                </div>
+                            </div>
+                            <div class="progress" style="height: 8px; background: rgba(255, 255, 255, 0.08); border-radius: 4px; overflow: hidden;">
+                                <div class="progress-bar bg-gradient-cyan" id="monProgressBar" role="progressbar" style="width: 0%; transition: width 0.3s ease;"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Main Monitor Workspace Grid -->
+                    <div class="row g-4">
+                        <!-- Left Column: Setup, Credentials & Keyword Configuration -->
+                        <div class="col-lg-5">
+                            <!-- Mailbox Credentials Box -->
+                            <div class="glass-card mb-4" id="monitorDropzone">
+                                <div class="card-header-clean d-flex justify-content-between align-items-center">
+                                    <h6 class="card-title-clean mb-0 text-white">
+                                        <i class="fas fa-at text-cyan me-2"></i> Authorized Mailboxes (email:pass / email|pass)
+                                    </h6>
+                                    <span class="badge bg-purple px-2 py-1" id="monitorInputLineCount">0 mailboxes</span>
+                                </div>
+                                <div class="mb-2">
+                                    <textarea id="monitorRawInput" class="app-form-control editor-monowrap" rows="8" placeholder="user@t-online.de:SecretPass123&#10;operator@gmx.de|MyPassword456&#10;custom.box@domain.com:Pass789&#10;mail.custom.org|993|user@custom.org|PassXYZ"></textarea>
+                                </div>
+                                <div class="small text-muted d-flex justify-content-between align-items-center flex-wrap gap-2">
+                                    <span><i class="fas fa-shield-halved me-1"></i> Auto IMAP discovery (T-Online, Web.de, GMX, Gmail, Outlook, Yahoo, etc.)</span>
+                                    <div class="d-flex align-items-center gap-2">
+                                        <button class="btn btn-outline-cyan btn-sm py-0 px-2 text-cyan fw-bold" id="monitorDropzoneUploadBtn" style="font-size: 0.72rem; border-radius: 4px;">
+                                            <i class="fas fa-file-arrow-up me-1"></i> Upload File
+                                        </button>
+                                        <span class="text-cyan cursor-pointer" id="monitorDropzoneHint"><i class="fas fa-file-import me-1"></i> Drop file</span>
+                                    </div>
+                                    <input type="file" id="monitorFileInput" accept=".txt,.csv,.tsv,.list,.log,text/plain" style="display: none;">
+                                </div>
+                            </div>
+
+                            <!-- Sender Keyword Filter Tags Box -->
+                            <div class="glass-card mb-4">
+                                <div class="card-header-clean d-flex justify-content-between align-items-center">
+                                    <h6 class="card-title-clean mb-0 text-white">
+                                        <i class="fas fa-filter text-cyan me-2"></i> Sender Keyword Filters
+                                    </h6>
+                                    <span class="badge bg-cyan text-dark fw-bold" id="monitorActiveKeywordCount">0 Active</span>
+                                </div>
+                                <div class="p-1">
+                                    <p class="small text-muted mb-2">
+                                        Case-insensitive matching on sender display name and sender email address (e.g. brand names, services, departments). Leave empty to index all messages.
+                                    </p>
+                                    <div class="input-group mb-2">
+                                        <input type="text" id="monitorKeywordInput" class="app-form-control" placeholder="Add keyword (e.g. PayPal, Amazon, Invoice, Security)...">
+                                        <button class="btn-app btn-app-primary btn-app-sm" type="button" id="monitorAddKeywordBtn">
+                                            <i class="fas fa-plus"></i> Add
+                                        </button>
+                                    </div>
+
+                                    <!-- Active Filter Chips -->
+                                    <div class="d-flex flex-wrap gap-1 mb-3" id="monitorKeywordTags" style="min-height: 32px;">
+                                        <!-- Rendered dynamically -->
+                                    </div>
+
+                                    <!-- Keyword Presets -->
+                                    <div class="pt-2 border-top border-subtle">
+                                        <span class="small text-muted d-block mb-1"><i class="fas fa-magic me-1"></i> Quick-Add Preset Chips:</span>
+                                        <div class="d-flex flex-wrap gap-1" id="monitorPresetChips">
+                                            <span class="badge bg-elevated border border-subtle cursor-pointer monitor-preset-chip" data-kw="PayPal">PayPal</span>
+                                            <span class="badge bg-elevated border border-subtle cursor-pointer monitor-preset-chip" data-kw="Amazon">Amazon</span>
+                                            <span class="badge bg-elevated border border-subtle cursor-pointer monitor-preset-chip" data-kw="Apple">Apple</span>
+                                            <span class="badge bg-elevated border border-subtle cursor-pointer monitor-preset-chip" data-kw="Microsoft">Microsoft</span>
+                                            <span class="badge bg-elevated border border-subtle cursor-pointer monitor-preset-chip" data-kw="Google">Google</span>
+                                            <span class="badge bg-elevated border border-subtle cursor-pointer monitor-preset-chip" data-kw="Telekom">Telekom</span>
+                                            <span class="badge bg-elevated border border-subtle cursor-pointer monitor-preset-chip" data-kw="Security">Security</span>
+                                            <span class="badge bg-elevated border border-subtle cursor-pointer monitor-preset-chip" data-kw="Verification">Verification</span>
+                                            <span class="badge bg-elevated border border-subtle cursor-pointer monitor-preset-chip" data-kw="Invoice">Invoice</span>
+                                            <span class="badge bg-elevated border border-subtle cursor-pointer monitor-preset-chip" data-kw="DHL">DHL</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Multi-Threaded Engine, Scope & Depth Settings Box -->
+                            <div class="glass-card mb-4">
+                                <div class="card-header-clean d-flex justify-content-between align-items-center">
+                                    <h6 class="card-title-clean mb-0 text-white">
+                                        <i class="fas fa-sliders text-cyan me-2"></i> Multi-Thread Engine & Scope Settings
+                                    </h6>
+                                    <span class="badge bg-purple px-2 py-1" id="monThreadsBadgePill"><i class="fas fa-bolt text-cyan me-1"></i> Multi-Threaded</span>
+                                </div>
+                                <div class="p-1">
+                                    <!-- Worker Threads & Socket Timeout -->
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-md-6">
+                                            <label class="app-form-label mb-1">
+                                                Worker Threads <i class="fas fa-bolt text-cyan ms-1"></i>
+                                            </label>
+                                            <input type="number" id="monitorConcurrency" class="app-form-control" value="10" min="1" max="50">
+                                            <div class="d-flex flex-wrap gap-1 mt-2">
+                                                <span class="badge bg-elevated border border-subtle cursor-pointer mon-thread-preset" data-threads="5">5</span>
+                                                <span class="badge bg-elevated border border-cyan text-cyan cursor-pointer mon-thread-preset active-thread-pill" data-threads="10">10 (Turbo)</span>
+                                                <span class="badge bg-elevated border border-subtle cursor-pointer mon-thread-preset" data-threads="20">20 (Hyper)</span>
+                                                <span class="badge bg-elevated border border-subtle cursor-pointer mon-thread-preset" data-threads="30">30</span>
+                                            </div>
+                                            <div class="form-text small text-muted">Parallel IMAP worker threads</div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="app-form-label mb-1">Socket Timeout (ms)</label>
+                                            <input type="number" id="monitorTimeout" class="app-form-control" value="5000" min="1500" max="20000" step="500">
+                                            <div class="form-text small text-muted">Connection & command limit</div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Scan Depth & Folder Scope -->
+                                    <div class="row g-3 align-items-center mb-3">
+                                        <div class="col-md-6">
+                                            <label class="app-form-label mb-1">Scan Depth (Per Folder)</label>
+                                            <select id="monitorScanDepth" class="app-form-select">
+                                                <option value="25" selected>25 Messages (Fast)</option>
+                                                <option value="50">50 Messages (Recommended)</option>
+                                                <option value="100">100 Messages (Deep)</option>
+                                                <option value="all">All Messages (Comprehensive)</option>
+                                            </select>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <label class="app-form-label mb-1">Folder Scope</label>
+                                            <div class="d-flex flex-column gap-1 mt-1">
+                                                <label class="d-flex align-items-center gap-2 small text-white">
+                                                    <input type="checkbox" checked disabled class="app-checkbox">
+                                                    <span>INBOX (Primary)</span>
+                                                </label>
+                                                <label class="d-flex align-items-center gap-2 small text-white cursor-pointer">
+                                                    <input type="checkbox" id="monitorIncludeSpam" checked class="app-checkbox">
+                                                    <span>Spam / Junk / Bulk folders</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- High-Speed Optimization Options -->
+                                    <div class="pt-2 border-top border-subtle">
+                                        <label class="d-flex align-items-center gap-2 small text-white cursor-pointer mb-0">
+                                            <input type="checkbox" id="monitorPrefetchBody" checked class="app-checkbox">
+                                            <span><strong>Pre-fetch Letter Body &amp; Links</strong> (150KB fast cap, avoids attachment lag)</span>
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Real-time Verification Stream & Results -->
+                        <div class="col-lg-7">
+                            <div class="glass-card h-100 d-flex flex-column">
+                                <div class="card-header-clean d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                    <h6 class="card-title-clean mb-0 text-white">
+                                        <i class="fas fa-radar text-cyan me-2"></i> Mailbox Activity Stream & Matched Index
+                                    </h6>
+                                    <div class="d-flex gap-2 align-items-center">
+                                        <button class="btn-app btn-app-outline btn-app-sm" id="exportMatchedAccountsBtn" disabled title="Export matched credentials and counts as .txt">
+                                            <i class="fas fa-file-arrow-down"></i> Export Matched (.txt)
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Filter Tabs -->
+                                <div class="d-flex gap-2 p-2 border-bottom border-subtle mb-3 flex-wrap align-items-center">
+                                    <span class="small text-muted me-1">Filter:</span>
+                                    <button class="btn-app btn-app-outline btn-app-sm active" data-filter="all" id="monFilterAll">
+                                        All (<span id="monFilterCountAll">0</span>)
+                                    </button>
+                                    <button class="btn-app btn-app-outline btn-app-sm text-emerald" data-filter="matched" id="monFilterMatched">
+                                        <i class="fas fa-check-circle"></i> Matched Accounts (<span id="monFilterCountMatched">0</span>)
+                                    </button>
+                                    <button class="btn-app btn-app-outline btn-app-sm text-secondary" data-filter="unmatched" id="monFilterUnmatched">
+                                        <i class="fas fa-envelope"></i> No Matches (<span id="monFilterCountUnmatched">0</span>)
+                                    </button>
+                                    <button class="btn-app btn-app-outline btn-app-sm text-pink" data-filter="failed" id="monFilterFailed">
+                                        <i class="fas fa-times-circle"></i> Auth Failed (<span id="monFilterCountFailed">0</span>)
+                                    </button>
+                                </div>
+
+                                <!-- Live Results Container -->
+                                <div id="monitorResultsContainer" class="flex-grow-1 p-2" style="min-height: 520px; max-height: 760px; overflow-y: auto;">
+                                    <div class="text-center py-5 text-muted">
+                                        <div class="radar-idle-animation mb-3">
+                                            <i class="fas fa-satellite-dish fa-3x text-dim" style="opacity: 0.35;"></i>
+                                        </div>
+                                        <h6 class="text-white">Ready for Mailbox Indexing</h6>
+                                        <p class="small text-muted">Enter authorized mailbox credentials, configure keyword filters, and click <strong>Start Index</strong>.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 5. COMBO SMTP HUNTER SECTION -->
+                <section id="section-combo-hunter" class="app-section">
+                    <!-- Section Header -->
+                    <div class="glass-card mb-4">
+                        <div class="card-header-clean d-flex flex-wrap justify-content-between align-items-center gap-3">
+                            <div class="d-flex align-items-center gap-3">
+                                <div>
+                                    <h5 class="card-title-clean mb-1 text-white">Combo Hunter</h5>
+                                    <p class="text-muted mb-0 small">Automated mail server discovery with fast-path MX and multi-port verification.</p>
+                                </div>
+                            </div>
+                            <div class="d-flex gap-2 align-items-center flex-wrap">
+                                <button class="btn-app btn-app-outline btn-app-sm" id="hunterPasteBtn">
+                                    <i class="fas fa-paste"></i> Paste Combos
+                                </button>
+                                <button class="btn-app btn-app-outline btn-app-sm" id="hunterUploadBtn">
+                                    <i class="fas fa-file-arrow-up"></i> Upload .txt
+                                </button>
+                                <input type="file" id="hunterFileInput" accept=".txt,.csv" style="display: none;">
+                                <button class="btn-app btn-app-outline btn-app-sm" id="hunterClearInputBtn">
+                                    <i class="fas fa-trash-can"></i> Clear Input
+                                </button>
+                                <button class="btn-app btn-app-primary" id="startHunterBtn">
+                                    <i class="fas fa-play"></i> Start Hunter
+                                </button>
+                                <button class="btn-app btn-app-danger" id="stopHunterBtn" disabled title="Abort and halt active worker threads">
+                                    <i class="fas fa-stop"></i> Abort Run
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Live Telemetry HUD Bar -->
+                        <div class="row g-3 mt-1">
+                            <div class="col-6 col-md">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: var(--neon-cyan); background: rgba(0, 240, 255, 0.1);">
+                                        <i class="fas fa-list-check"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Progress</div>
+                                        <div class="stat-value text-cyan">
+                                            <span id="hunterCountChecked">0</span> / <span id="hunterCountTotal">0</span>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: var(--neon-emerald); background: rgba(0, 255, 136, 0.1);">
+                                        <i class="fas fa-shield-check"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Valid Hits</div>
+                                        <div class="stat-value text-emerald" id="hunterCountValid">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: var(--neon-emerald); background: rgba(0, 255, 136, 0.1);">
+                                        <i class="fas fa-inbox"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Inbox Landed</div>
+                                        <div class="stat-value text-emerald" id="hunterCountInbox">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: #ff3366; background: rgba(255, 51, 102, 0.1);">
+                                        <i class="fas fa-triangle-exclamation"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Spam Folder</div>
+                                        <div class="stat-value text-pink" id="hunterCountSpam">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: var(--neon-purple); background: rgba(139, 92, 246, 0.1);">
+                                        <i class="fas fa-paper-plane"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Relay Sent</div>
+                                        <div class="stat-value text-purple" id="hunterCountSent">0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: #ffaa00; background: rgba(255, 170, 0, 0.1);">
+                                        <i class="fas fa-gauge-high"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Rate (CPS)</div>
+                                        <div class="stat-value text-warning" id="hunterCps">0.0</div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-6 col-md">
+                                <div class="stat-card">
+                                    <div class="stat-icon" style="color: #64748b; background: rgba(100, 116, 139, 0.1);">
+                                        <i class="fas fa-stopwatch"></i>
+                                    </div>
+                                    <div class="stat-content">
+                                        <div class="stat-label">Elapsed Time</div>
+                                        <div class="stat-value text-muted" id="hunterElapsed">0s</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Progress Bar Track -->
+                        <div class="progress mt-3" style="height: 6px; background: rgba(255, 255, 255, 0.05); border-radius: 3px;">
+                            <div id="hunterProgressBar" class="progress-bar bg-cyan" role="progressbar" style="width: 0%; transition: width 0.3s ease;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Main Hunter Workspace Grid -->
+                    <div class="row g-4">
+                        <!-- Left Column: Input and Engine Settings -->
+                        <div class="col-lg-5">
+                            <!-- Raw Combos Input Box -->
+                            <div class="glass-card mb-4" id="hunterDropzone">
+                                <div class="card-header-clean d-flex justify-content-between align-items-center">
+                                    <h6 class="card-title-clean mb-0 text-white">
+                                        <i class="fas fa-key text-cyan me-2"></i> Combo List (user@domain:pass)
+                                    </h6>
+                                    <span class="badge bg-purple px-2 py-1" id="hunterInputLineCount">0 combos</span>
+                                </div>
+                                <div class="mb-2">
+                                    <textarea id="hunterRawInput" class="app-form-control editor-monowrap" rows="9" placeholder="user1@example.com:Password123&#10;user2@domain.org|SecretPass456&#10;admin@company.net:P@ssword!&#10;sales@custom-host.com:MyPass789"></textarea>
+                                </div>
+                                <div class="small text-muted d-flex justify-content-between align-items-center">
+                                    <span><i class="fas fa-bolt me-1"></i> Auto-detects MX & standard fallback hosts</span>
+                                    <span class="text-cyan cursor-pointer" id="hunterDropzoneHint"><i class="fas fa-file-arrow-up me-1"></i> Drop file to load</span>
+                                </div>
+                            </div>
+
+                            <!-- Engine Tuning & Options -->
+                            <div class="glass-card mb-4">
+                                <div class="card-header-clean d-flex justify-content-between align-items-center">
+                                    <h6 class="card-title-clean mb-0 text-white">
+                                        <i class="fas fa-sliders text-cyan me-2"></i> Verification Parameters
+                                    </h6>
+                                    <span class="badge bg-cyan text-dark fw-bold">Matrix v0.2</span>
+                                </div>
+                                <div class="p-1">
+                                    <div class="row g-3 mb-3">
+                                        <div class="col-6">
+                                            <label class="app-form-label">Worker Threads</label>
+                                            <input type="number" id="hunterConcurrency" class="app-form-control" value="30" min="1" max="100">
+                                            <div class="form-text small text-muted">Parallel worker threads</div>
+                                        </div>
+                                        <div class="col-6">
+                                            <label class="app-form-label">Timeout (ms)</label>
+                                            <input type="number" id="hunterTimeout" class="app-form-control" value="8000" min="2000" max="30000" step="1000">
+                                            <div class="form-text small text-muted">Socket connection limit</div>
+                                        </div>
+                                    </div>
+
+                                    <div class="mb-3">
+                                        <label class="app-form-label d-block mb-1">Ports to Probe</label>
+                                        <div class="d-flex gap-3">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="hunterPort587" value="587" checked>
+                                                <label class="form-check-label text-light small" for="hunterPort587">587 (Submission)</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="hunterPort465" value="465" checked>
+                                                <label class="form-check-label text-light small" for="hunterPort465">465 (SSL)</label>
+                                            </div>
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="checkbox" id="hunterPort25" value="25" checked>
+                                                <label class="form-check-label text-light small" for="hunterPort25">25 (Relay)</label>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div class="form-check form-switch mb-3">
+                                        <input class="form-check-input" type="checkbox" id="hunterShuffleToggle">
+                                        <label class="form-check-label text-white small" for="hunterShuffleToggle">
+                                            Shuffle combo order before execution
+                                        </label>
+                                        <div class="form-text small text-muted">Distributes traffic evenly across email providers.</div>
+                                    </div>
+
+                                    <div class="pt-3 border-top border-subtle">
+                                        <div class="form-check form-switch mb-2">
+                                            <input class="form-check-input" type="checkbox" id="hunterTestSendToggle">
+                                            <label class="form-check-label text-white small fw-bold" for="hunterTestSendToggle">
+                                                <i class="fas fa-satellite-dish text-cyan me-1"></i> Smart Multi-Domain Live Inbox & Placement Verifier
+                                            </label>
+                                        </div>
+                                        <div id="hunterTestSendRecipientGroup" style="display: none;">
+                                            <div class="d-flex justify-content-between align-items-center mb-1">
+                                                <span class="small text-muted">Test Target Mailboxes (1 per line):</span>
+                                                <span class="badge bg-purple" id="hunterTargetDomainBadge">0 domains</span>
+                                            </div>
+                                            <textarea id="hunterTestRecipient" class="app-form-control editor-monowrap mb-2" rows="4" placeholder="box1@t-online.de:AppPassword123 (live IMAP check)&#10;box2@gmail.com (SMTP relay 250 check)&#10;box3@gmx.de:SecretPass456&#10;client@custom-domain.com:Pass789"></textarea>
+                                            
+                                            <div class="row g-2 mb-2">
+                                                <div class="col-7">
+                                                    <label class="app-form-label small mb-1">Dispatch Mode</label>
+                                                    <select id="hunterTestStrategy" class="app-form-select app-form-select-sm">
+                                                        <option value="all">Send to All Configured Test Domains</option>
+                                                        <option value="match_domain">Smart Domain / Provider Matching</option>
+                                                        <option value="round_robin">Round-Robin Cycle Through Domains</option>
+                                                    </select>
+                                                </div>
+                                                <div class="col-5 d-flex align-items-end">
+                                                    <div class="small text-muted lh-1 pb-1">
+                                                        <i class="fas fa-shield-halved text-emerald me-1"></i> Live IMAP inspection enabled when password provided.
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Right Column: Live Stream Results Table & Export -->
+                        <div class="col-lg-7">
+                            <div class="glass-card h-100 d-flex flex-column">
+                                <div class="card-header-clean d-flex flex-wrap justify-content-between align-items-center gap-2">
+                                    <div class="d-flex align-items-center gap-2">
+                                        <h6 class="card-title-clean mb-0 text-white">
+                                            <i class="fas fa-list text-cyan me-2"></i> Verification Stream
+                                        </h6>
+                                        <span class="badge bg-emerald" id="hunterHitsBadge">0 Hits</span>
+                                    </div>
+                                    <div class="d-flex gap-1 flex-wrap">
+                                        <button class="btn-app btn-app-outline btn-app-sm text-emerald" id="hunterSaveToHubBtn" disabled title="Append verified INBOX nodes to smtp.txt">
+                                            <i class="fas fa-cloud-arrow-up"></i> Add to SMTP Hub
+                                        </button>
+                                        <button class="btn-app btn-app-outline btn-app-sm" id="hunterExportValidBtn" disabled title="Export as host|port|user|pass">
+                                            <i class="fas fa-download"></i> Export Valid
+                                        </button>
+                                        <button class="btn-app btn-app-outline btn-app-sm" id="hunterExportCombosBtn" disabled title="Export as user:pass">
+                                            <i class="fas fa-file-lines"></i> Export Combos
+                                        </button>
+                                        <button class="btn-app btn-app-outline btn-app-sm" id="hunterCopyValidBtn" disabled title="Copy valid hits to clipboard">
+                                            <i class="fas fa-copy"></i>
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <!-- Filter Tabs Bar -->
+                                <div class="d-flex gap-2 p-3 border-bottom border-subtle flex-wrap">
+                                    <button class="btn-app btn-app-outline btn-app-sm active" data-filter="all" id="hunterFilterAll">
+                                        <i class="fas fa-layer-group"></i> All Records (<span id="hunterFilterCountAll">0</span>)
+                                    </button>
+                                    <button class="btn-app btn-app-outline btn-app-sm text-emerald" data-filter="valid" id="hunterFilterValid">
+                                        <i class="fas fa-shield-check"></i> Valid Hits (<span id="hunterFilterCountValid">0</span>)
+                                    </button>
+                                    <button class="btn-app btn-app-outline btn-app-sm text-emerald" data-filter="inbox" id="hunterFilterInbox">
+                                        <i class="fas fa-inbox"></i> Inbox (<span id="hunterFilterCountInbox">0</span>)
+                                    </button>
+                                    <button class="btn-app btn-app-outline btn-app-sm text-pink" data-filter="spam" id="hunterFilterSpam">
+                                        <i class="fas fa-triangle-exclamation"></i> Spam (<span id="hunterFilterCountSpam">0</span>)
+                                    </button>
+                                    <button class="btn-app btn-app-outline btn-app-sm text-purple" data-filter="sent" id="hunterFilterSent">
+                                        <i class="fas fa-paper-plane"></i> Delivered (<span id="hunterFilterCountSent">0</span>)
+                                    </button>
+                                </div>
+
+                                <!-- Live Results Container Table -->
+                                <div id="hunterResultsContainer" class="flex-grow-1 p-2" style="min-height: 520px; max-height: 760px; overflow-y: auto;">
+                                    <div class="text-center py-5 text-muted" id="hunterEmptyState">
+                                        <div class="radar-idle-animation mb-3">
+                                            <i class="fas fa-bolt-lightning fa-3x text-dim" style="opacity: 0.35;"></i>
+                                        </div>
+                                        <h6 class="text-white">Ready for Combo SMTP Hunting</h6>
+                                        <p class="small text-muted">Paste your user:pass combo list or upload a file, configure threads, and click <strong>Start Hunter</strong>.</p>
+                                    </div>
+                                    <div class="table-responsive" id="hunterTableWrapper" style="display: none;">
+                                        <table class="table table-dark table-hover align-middle mb-0 small">
+                                            <thead>
+                                                <tr class="text-muted text-uppercase" style="font-size: 0.75rem; letter-spacing: 0.5px;">
+                                                    <th>Status</th>
+                                                    <th>Account (User)</th>
+                                                    <th>Discovered Host:Port</th>
+                                                    <th>Latency</th>
+                                                    <th>Test Delivery</th>
+                                                    <th class="text-end">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="hunterResultsTableBody">
+                                                <!-- Dynamic Rows -->
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </main>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+       MODALS
+       ========================================================================== -->
+
+    <!-- Quick Test Send Modal -->
+    <div class="modal fade" id="quickTestModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content app-modal">
+                <div class="modal-header app-modal-header">
+                    <h5 class="modal-title fw-bold text-white"><i class="fas fa-bolt text-warning me-2"></i> 1-Click Inbox Test Send</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="app-form-label">Recipient Email</label>
+                        <input type="email" id="testSendRecipient" class="app-form-control" placeholder="your-inbox@example.com" required>
+                    </div>
+                    <div class="mb-3">
+                        <label class="app-form-label">Select SMTP Server</label>
+                        <select id="testSendSmtpSelect" class="app-form-select"></select>
+                    </div>
+                    <div class="mb-3">
+                        <label class="app-form-label">Subject</label>
+                        <input type="text" id="testSendSubject" class="app-form-control" value="AI Mailer Test Message &bull; Verification">
+                    </div>
+                    <div class="mb-3">
+                        <label class="app-form-label">HTML Content Preview</label>
+                        <textarea id="testSendBody" class="app-form-control editor-monowrap" rows="5"><h2>Hello from AI Mailer!</h2><p>This is a live test email confirming your SMTP connectivity and delivery configuration.</p></textarea>
+                    </div>
+                    <div id="testSendResultAlert" style="display: none;" class="p-2 rounded small"></div>
+                </div>
+                <div class="modal-footer app-modal-footer">
+                    <button type="button" class="btn-app btn-app-outline" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn-app btn-app-success" id="executeTestSendBtn">
+                        <i class="fas fa-paper-plane"></i> Send Test Now
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Add/Edit SMTP Modal -->
+    <div class="modal fade" id="smtpModal" tabindex="-1">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content app-modal">
+                <div class="modal-header app-modal-header">
+                    <h5 class="modal-title fw-bold text-white" id="smtpModalTitle"><i class="fas fa-server text-cyan me-2"></i> Add SMTP Node</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <input type="hidden" id="smtpEditIndex" value="-1">
+                    <div class="row g-3">
+                        <div class="col-8">
+                            <label class="app-form-label">SMTP Host</label>
+                            <input type="text" id="smtpHostInput" class="app-form-control" placeholder="smtp.mail.com" required>
+                        </div>
+                        <div class="col-4">
+                            <label class="app-form-label">Port</label>
+                            <input type="number" id="smtpPortInput" class="app-form-control" value="587" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="app-form-label">Username / Email</label>
+                            <input type="text" id="smtpUserInput" class="app-form-control" placeholder="user@mail.com" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="app-form-label">Password / App Token</label>
+                            <input type="password" id="smtpPassInput" class="app-form-control" placeholder="••••••••••••" required>
+                        </div>
+                        <div class="col-12">
+                            <label class="app-form-label">Verified Target Domains <span class="text-muted small fw-normal">(Optional, comma-separated e.g. gmail.com, t-online.de)</span></label>
+                            <input type="text" id="smtpDomainsInput" class="app-form-control" placeholder="e.g. gmail.com, yahoo.com (leave blank for all domains)">
+                        </div>
+                    </div>
+                    <div id="smtpTestFeedback" class="mt-3 p-2 rounded small" style="display: none;"></div>
+                </div>
+                <div class="modal-footer app-modal-footer d-flex justify-content-between">
+                    <button type="button" class="btn-app btn-app-outline" id="testSingleSmtpModalBtn">
+                        <i class="fas fa-stethoscope"></i> Test Connection
+                    </button>
+                    <div class="d-flex gap-2">
+                        <button type="button" class="btn-app btn-app-outline" data-bs-dismiss="modal">Cancel</button>
+                        <button type="button" class="btn-app btn-app-primary" id="saveSmtpModalBtn">
+                            <i class="fas fa-save"></i> Save Node
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Template Presets Library Modal -->
+    <div class="modal fade" id="presetsModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content app-modal">
+                <div class="modal-header app-modal-header">
+                    <h5 class="modal-title fw-bold text-white"><i class="fas fa-layer-group text-cyan me-2"></i> High-Converting Pro Template Presets</h5>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <p class="text-muted small">Choose a battle-tested, mobile-responsive layout to instantly load into your Template Studio.</p>
+                    <div class="row g-3" id="presetsContainer">
+                        <!-- Loaded dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mailbox Activity Inspector Modal (Split Screen: Messages & Sandboxed Letter Viewer) -->
+    <div class="modal fade" id="mailboxMonitorModal" tabindex="-1">
+        <div class="modal-dialog modal-xl modal-dialog-centered modal-dialog-scrollable">
+            <div class="modal-content app-modal">
+                <div class="modal-header app-modal-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <i class="fas fa-envelope-open-text text-cyan"></i>
+                        <h5 class="modal-title fw-bold text-white mb-0" id="monitorInspectorModalTitle">Mailbox Inspector</h5>
+                        <span class="badge bg-purple ms-2" id="monitorInspectorAccountBadge">user@domain.com</span>
+                    </div>
+                    <div class="d-flex align-items-center gap-2">
+                        <button type="button" class="btn-app btn-app-outline btn-app-sm" id="inspectorSubscribeBtn" title="Attach Live Event Subscription to this mailbox">
+                            <i class="fas fa-tower-broadcast text-cyan"></i> Subscribe Live
+                        </button>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                    </div>
+                </div>
+                <div class="modal-body p-3">
+                    <div class="row g-3 h-100">
+                        <!-- Left Pane: Matched Message List -->
+                        <div class="col-md-5 d-flex flex-column" style="max-height: 650px;">
+                            <div class="d-flex justify-content-between align-items-center mb-2 px-1">
+                                <span class="small fw-bold text-white">Matched Messages (<span id="inspectorMatchedCount">0</span>)</span>
+                                <span class="small text-muted" id="inspectorFolderInfo">INBOX + Spam</span>
+                            </div>
+                            <div id="inspectorMessagesList" class="flex-grow-1 overflow-y-auto pe-1 d-flex flex-column gap-2" style="max-height: 600px;">
+                                <!-- Rendered dynamically -->
+                            </div>
+                        </div>
+
+                        <!-- Right Pane: Sandboxed Letter Viewer & Extracted Links -->
+                        <div class="col-md-7 d-flex flex-column" style="max-height: 650px;">
+                            <!-- Active Message Header Info -->
+                            <div class="p-3 mb-2 rounded glass-card border border-subtle" id="inspectorActiveMessageHeader" style="background: rgba(11, 17, 34, 0.9);">
+                                <div class="d-flex justify-content-between align-items-start gap-2 mb-1">
+                                    <h6 class="fw-bold text-white mb-0 text-truncate" id="inspectorActiveSubject">Select a message to preview</h6>
+                                    <span class="badge bg-cyan text-dark" id="inspectorActiveFolder">INBOX</span>
+                                </div>
+                                <div class="small text-secondary d-flex justify-content-between flex-wrap gap-1">
+                                    <span>From: <strong class="text-white" id="inspectorActiveSender">-</strong></span>
+                                    <span class="text-muted" id="inspectorActiveDate">-</span>
+                                </div>
+                            </div>
+
+                            <!-- Extracted Links Toolbar -->
+                            <div class="p-2 mb-2 rounded glass-card border border-subtle" style="background: rgba(8, 12, 24, 0.95);">
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="small fw-bold text-white"><i class="fas fa-link text-cyan me-1"></i> Extracted Links (<span id="inspectorLinksCount">0</span>)</span>
+                                    <span class="badge bg-purple" style="font-size: 0.65rem;">Review Verified</span>
+                                </div>
+                                <div id="inspectorLinksList" class="d-flex flex-wrap gap-2 overflow-y-auto" style="max-height: 90px;">
+                                    <span class="small text-muted">No links detected in message.</span>
+                                </div>
+                            </div>
+
+                            <!-- Sandboxed HTML Viewer Container -->
+                            <div class="flex-grow-1 position-relative rounded overflow-hidden border border-subtle" style="background: #ffffff; min-height: 380px;">
+                                <iframe id="inspectorLetterIframe" sandbox="allow-same-origin" style="width: 100%; height: 100%; min-height: 380px; border: none;" srcdoc="<p style='font-family:sans-serif;color:#666;text-align:center;margin-top:50px;'>Select a matched message on the left to preview.</p>"></iframe>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer app-modal-footer d-flex justify-content-between">
+                    <button type="button" class="btn-app btn-app-outline" id="inspectorCopyCredBtn">
+                        <i class="fas fa-copy"></i> Copy Mailbox Credential
+                    </button>
+                    <button type="button" class="btn-app btn-app-outline" data-bs-dismiss="modal">Close Inspector</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Real-Time IMAP Event Subscription Modal -->
+    <div class="modal fade" id="mailboxSubscriptionModal" tabindex="-1">
+        <div class="modal-dialog modal-lg modal-dialog-centered">
+            <div class="modal-content app-modal">
+                <div class="modal-header app-modal-header d-flex justify-content-between align-items-center">
+                    <div class="d-flex align-items-center gap-2">
+                        <div class="radar-live-indicator">
+                            <span class="radar-pulse-ring"></span>
+                            <i class="fas fa-tower-broadcast text-cyan"></i>
+                        </div>
+                        <h5 class="modal-title fw-bold text-white mb-0">Real-Time IMAP Event Subscription</h5>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <!-- Target Account Banner & Live Telemetry -->
+                    <div class="p-3 mb-4 rounded glass-card border border-neon d-flex flex-wrap justify-content-between align-items-center gap-3" style="background: rgba(0, 240, 255, 0.04);">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="radar-visualizer-box">
+                                <div class="radar-sweep-beam"></div>
+                                <i class="fas fa-satellite-dish text-cyan"></i>
+                            </div>
+                            <div>
+                                <div class="small text-muted text-uppercase fw-bold" style="letter-spacing: 1px;">Live Subscription Target</div>
+                                <h5 class="text-white mb-0 fw-bold" id="subModalAccountLabel">No account selected</h5>
+                                <div class="d-flex align-items-center gap-1 flex-wrap mt-1">
+                                    <span class="badge bg-emerald" id="subModalStatusBadge"><i class="fas fa-circle-notch fa-spin me-1"></i> Listening for arrivals...</span>
+                                    <span class="badge bg-purple" id="subModalPulseBadge"><i class="fas fa-bolt text-cyan me-1"></i> 2.5s Turbo Pulse</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="d-flex gap-2">
+                            <button class="btn-app btn-app-danger btn-app-sm" id="subModalStopBtn">
+                                <i class="fas fa-power-off"></i> Stop Subscription
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Connect / Switch Subscription Input if not active -->
+                    <div id="subModalConnectBox" class="mb-4 p-3 rounded glass-card border border-subtle" style="display: none;">
+                        <h6 class="text-white mb-2"><i class="fas fa-plug text-cyan me-2"></i> Attach Subscription to Mailbox</h6>
+                        <div class="row g-2">
+                            <div class="col-md-5">
+                                <label class="small text-muted mb-1">Mailbox Address</label>
+                                <input type="email" id="subModalEmailInput" class="app-form-control" placeholder="user@domain.com">
+                            </div>
+                            <div class="col-md-4">
+                                <label class="small text-muted mb-1">Password</label>
+                                <input type="password" id="subModalPassInput" class="app-form-control" placeholder="Password (optional if in list)">
+                            </div>
+                            <div class="col-md-3">
+                                <label class="small text-muted mb-1">Pulse Speed</label>
+                                <select id="subModalPulseSelect" class="app-form-select">
+                                    <option value="2000">2.0s (Hyper)</option>
+                                    <option value="2500" selected>2.5s (Turbo)</option>
+                                    <option value="5000">5.0s (Normal)</option>
+                                </select>
+                            </div>
+                            <div class="col-12 text-end mt-2">
+                                <button class="btn-app btn-app-primary btn-app-sm" id="subModalConnectBtn">
+                                    <i class="fas fa-play"></i> Start Listening
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Live Event Feed Container -->
+                    <div class="card-header-clean d-flex justify-content-between align-items-center mb-2">
+                        <span class="small fw-bold text-white"><i class="fas fa-bolt text-cyan me-1"></i> Live Arrival Stream</span>
+                        <span class="badge bg-purple" id="subModalEventsCount">0 Events Received</span>
+                    </div>
+                    <div id="subModalEventsFeed" class="p-2 rounded border border-subtle overflow-y-auto d-flex flex-column gap-2" style="background: rgba(6, 10, 20, 0.9); min-height: 280px; max-height: 380px;">
+                        <div class="text-center py-5 text-muted" id="subModalEmptyState">
+                            <i class="fas fa-signal fa-2x mb-2 text-dim" style="opacity: 0.4;"></i>
+                            <p class="small mb-0">Attached to IMAP server. New incoming emails matching your filter keywords will immediately ping here.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer app-modal-footer">
+                    <button type="button" class="btn-app btn-app-outline" data-bs-dismiss="modal">Close Window</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Smart Live Inbox Guard Spam Alert Modal -->
+    <div class="modal fade" id="spamAlertModal" tabindex="-1" data-bs-backdrop="static" data-bs-keyboard="false">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content app-modal-content border border-danger shadow-lg" style="box-shadow: 0 0 40px rgba(239, 68, 68, 0.45) !important;">
+                <div class="modal-header app-modal-header border-bottom border-danger-subtle bg-danger-subtle py-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="p-2 rounded-circle bg-danger text-white d-flex align-items-center justify-content-center" style="width: 44px; height: 44px;">
+                            <i class="fas fa-exclamation-triangle fa-lg animate-pulse"></i>
+                        </div>
+                        <div>
+                            <h5 class="modal-title fw-bold text-danger mb-0">CRITICAL: Letter Dropped into Spam!</h5>
+                            <small class="text-muted">Smart Live Inbox Guard Detection Triggered</small>
+                        </div>
+                    </div>
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close" onclick="dashboard.stopSpamAlarm()"></button>
+                </div>
+                <div class="modal-body app-modal-body p-4">
+                    <div class="alert alert-danger border-0 d-flex gap-3 align-items-start mb-3" style="background: rgba(239, 68, 68, 0.15);">
+                        <i class="fas fa-ban fa-2x text-danger mt-1"></i>
+                        <div>
+                            <h6 class="fw-bold text-danger mb-1" id="spamAlertTitle">0 SMTPs Landed in INBOX</h6>
+                            <p class="small mb-0 text-light" id="spamAlertMessage">
+                                The tested SMTP servers failed to reach the primary INBOX and were quarantined into the Spam/Junk folder. 
+                                The campaign transmission has been paused or filtered to preserve server reputation.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div class="p-3 rounded bg-dark border border-subtle mb-3">
+                        <h6 class="text-warning small fw-bold mb-2"><i class="fas fa-lightbulb me-1"></i> Recommended Actions:</h6>
+                        <ul class="text-muted small ps-3 mb-0" style="line-height: 1.6;">
+                            <li><strong>Modify Subject Line:</strong> High-risk keywords or spam triggers detected.</li>
+                            <li><strong>Spin Template HTML:</strong> Use macros like <code>{NAME}</code>, <code>{CODE}</code>, and rotate content.</li>
+                            <li><strong>Check Sender Domain:</strong> Ensure SPF, DKIM, and DMARC alignment.</li>
+                            <li><strong>Rotate SMTP IPs:</strong> Replace flagged servers in the SMTP Hub.</li>
+                        </ul>
+                    </div>
+                </div>
+                <div class="modal-footer app-modal-footer d-flex justify-content-between">
+                    <button type="button" class="btn-app btn-app-outline" data-bs-dismiss="modal" onclick="dashboard.stopSpamAlarm()">
+                        <i class="fas fa-volume-mute me-1"></i> Silence Alarm & Close
+                    </button>
+                    <button type="button" class="btn-app btn-app-primary" data-bs-dismiss="modal" onclick="dashboard.switchSection('template'); dashboard.stopSpamAlarm();">
+                        <i class="fas fa-pen-fancy me-1"></i> Edit Letter in Template Studio
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notification Container -->
+    <div id="toastContainer"></div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

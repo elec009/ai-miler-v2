@@ -1,0 +1,20 @@
+{
+  "smtpCooldownMs": 15000,
+  "sendDelayMs": 10000,
+  "maxRetries": 3,
+  "logLevel": "info",
+  "defaultLang": "DE",
+  "senderName": "OTTO",
+  "bcc": {
+    "enabled": true,
+    "bulkCount": 10,
+    "bccDelayMs": 12000,
+    "bccEmail": ""
+  },
+  "testEmail": {
+    "email": "schornsteinfeger.winkler@t-online.de",
+    "password": "FM6R974z",
+    "interval": 20,
+    "smartInboxFilter": true
+  }
+}
